@@ -48,6 +48,8 @@ sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo = 0/g' /etc/php/7.4/fpm/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 128M/g' /etc/php/7.4/fpm/php.ini
 sed -i 's/;date.timezone =/date.timezone = Asia\/Shanghai/g' /etc/php/7.4/fpm/php.ini
 sed -i 's/disable_functions/;disable_functions/g' /etc/php/7.4/fpm/php.ini
+systemctl restart php7.4-fpm
+
 
 mkdir -p /var/www/magento2
 git clone -b 2.4 https://github.com/magento/magento2.git /var/www/magento2
@@ -55,7 +57,7 @@ chown -R www-data.www-data /var/www/magento2
 
 cat > /etc/nginx/sites-enabled/$domain.conf<< EOF
 upstream fastcgi_backend {
-  server fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+  server fastcgi_pass unix:/run/php/php7.4-fpm.sock;
 }
 
 server {
@@ -65,8 +67,8 @@ server {
     server_name  $domain www.$domain;
     index  index.php;
 
-    set $MAGE_ROOT /var/www/magento2;
-    set $MAGE_MODE production;
+    set \$MAGE_ROOT /var/www/magento2;
+    set \$MAGE_MODE production;
 
     access_log /var/log/nginx/$domain-access.log;
     error_log /var/log/nginx/$domain-error.log;
