@@ -90,6 +90,8 @@ cd /var/www/magento2
 php bin/magento setup:install --base-url=http://$domain --db-host=localhost --db-name=$dbname --db-user=$dbuser --db-password=$dbpassword --admin-firstname=admin --admin-lastname=admin --admin-email=admin@$domain --admin-user=$admin --admin-password=$adminpassword --language=en_US --currency=USD --timezone=Asia/Shanghai --use-rewrites=1 --backend-frontname=admin_portal --elasticsearch-host=127.0.0.1 --elasticsearch-index-prefix=$domain
 chmod -R /var/www/magento2/var
 php bin/magento setup:di:compile
+chmod -R /var/www/magento2/var
+
 
 echo "magento url : http://$domain"
 echo "magento admin url : http://$domain/admin_portal"
