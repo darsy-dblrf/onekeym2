@@ -92,7 +92,7 @@ chmod -R /var/www/magento2/var
 php bin/magento setup:di:compile
 chmod -R /var/www/magento2/var
 
-
+clear
 echo "magento url : http://$domain"
 echo "magento admin url : http://$domain/admin_portal"
 echo "admin username : $admin"
