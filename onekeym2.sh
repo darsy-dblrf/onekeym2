@@ -87,7 +87,7 @@ EOF
 
 systemctl restart nginx
 cd /var/www/magento2
-sudo -u www-data php bin/magento setup:install \
+php bin/magento setup:install \
 --base-url="$domain" \
 --db-host="localhost" \
 --db-name="$dbname" \
