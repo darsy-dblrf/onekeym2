@@ -21,6 +21,8 @@ printf "
 read -e -p "Please input domain(example: www.magento2.com): " domain
 read -e -p "Please input Database username(example: mg2user): " dbuser
 read -e -p "Please input Database name(example: mg2db): " dbname
+read -e -p "Please input magento admin username(example: admin): " admin
+read -e -p "Please input magento admin password(example: adminpassword): " adminpassword
 dbpassword=`openssl rand -base64 12`
 
 #start install
@@ -38,7 +40,7 @@ mysql -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpassword';"
 mysql -e "grant all privileges on $dbname.* TO '$dbuser'@'localhost';"
 mysql -e "flush privileges;"
 
-apt install nginx php7.4-fpm php7.4-common php7.4-mysql php7.4-gmp php7.4-curl php7.4-intl php7.4-mbstring php7.4-xmlrpc php7.4-gd php7.4-xml php7.4-cli php7.4-zip -y
+apt install nginx php7.4-fpm php7.4-common php7.4-mysql php7.4-gmp php7.4-curl php7.4-intl php7.4-bcmath php7.4-soap php7.4-mbstring php7.4-xmlrpc php7.4-gd php7.4-xml php7.4-cli php7.4-zip -y
 
 sed -i 's/max_execution_time = 30/max_execution_time = 600/g' /etc/php/7.4/fpm/php.ini
 sed -i 's/max_input_time = 60/max_input_time = 600/g' /etc/php/7.4/fpm/php.ini
@@ -49,15 +51,19 @@ sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 128M/g' /etc/php/7.4/fp
 sed -i 's/;date.timezone =/date.timezone = Asia\/Shanghai/g' /etc/php/7.4/fpm/php.ini
 sed -i 's/disable_functions/;disable_functions/g' /etc/php/7.4/fpm/php.ini
 systemctl restart php7.4-fpm
+curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
 
 
 mkdir -p /var/www/magento2
 git clone -b 2.4 https://github.com/magento/magento2.git /var/www/magento2
 chown -R www-data.www-data /var/www/magento2
+cd /var/www/magento2
+sudo -u www-data composer install
+cd /root/
 
 cat > /etc/nginx/sites-enabled/$domain.conf<< EOF
 upstream fastcgi_backend {
-  server fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+    server   unix:/var/run/php/php7.4-fpm.sock;
 }
 
 server {
@@ -78,3 +84,22 @@ server {
 EOF
 
 systemctl restart nginx
+cd /var/www/magento2
+sudo -u www-data php bin/magento setup:install \
+--base-url="$domain" \
+--db-host="localhost" \
+--db-name="$dbname" \
+--db-user="$dbuser" \
+--db-password="$dbpassword" \
+--admin-firstname="admin" \
+--admin-lastname="admin" \
+--admin-email="admin@domain" \
+--admin-user="$admin" \
+--admin-password="$adminpassword" \
+--language="en_US" \
+--currency="USD" \
+--timezone="Aisa/Shanghai" \
+--use-rewrites="1" \
+--backend-frontname="admin_portal" \
+--elasticsearch-host="127.0.0.1" \
+--elasticsearch-index-prefix="$domain"
