@@ -87,4 +87,4 @@ EOF
 
 systemctl restart nginx
 cd /var/www/magento2
-php bin/magento setup:install --base-url=$http://domain --db-host=localhost --db-name=$dbname --db-user=$dbuser --db-password=$dbpassword --admin-firstname=admin --admin-lastname=admin --admin-email=admin@$domain --admin-user=$admin --admin-password=$adminpassword --language=en_US --currency=USD --timezone=Asia/Shanghai --use-rewrites=1 --backend-frontname=admin_portal --elasticsearch-host=127.0.0.1 --elasticsearch-index-prefix=$domain
+php bin/magento setup:install --base-url=http://$domain --db-host=localhost --db-name=$dbname --db-user=$dbuser --db-password=$dbpassword --admin-firstname=admin --admin-lastname=admin --admin-email=admin@$domain --admin-user=$admin --admin-password=$adminpassword --language=en_US --currency=USD --timezone=Asia/Shanghai --use-rewrites=1 --backend-frontname=admin_portal --elasticsearch-host=127.0.0.1 --elasticsearch-index-prefix=$domain
