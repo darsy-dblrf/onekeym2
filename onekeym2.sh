@@ -34,6 +34,8 @@ add-apt-repository ppa:ondrej/php -y
 curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash -s -- --mariadb-server-version=10.4 --skip-maxscale
 apt install mariadb-server  mariadb-client -y
 curl -sSL https://get.docker.com | bash
+docker run -d -p 9200:9200 -p 9300:9300 -p 5601:5601 --restart=always --name eskibana nshou/elasticsearch-kibana
+
 
 mysql -e "create database $dbname;"
 mysql -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpassword';"
